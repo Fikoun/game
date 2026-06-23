@@ -13,6 +13,7 @@
     --done: #7fb069;
     --card: #2a1f17;
     --border: #3d2f23;
+    --err: #d46a4c;
   }
   * { box-sizing: border-box; }
   body {
@@ -23,26 +24,10 @@
     min-height: 100vh;
     padding: 1.5rem 1rem;
   }
-  .wrap {
-    max-width: 480px;
-    margin: 0 auto;
-  }
-  h1 {
-    font-size: 1.5rem;
-    margin: 0 0 0.25rem;
-    color: var(--accent);
-  }
-  .subtitle {
-    color: var(--muted);
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-  }
-  label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-bottom: 0.35rem;
-  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 0.25rem; color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem; }
   input[type="text"] {
     width: 100%;
     padding: 0.7rem 0.9rem;
@@ -52,23 +37,15 @@
     border-radius: 8px;
     font-size: 1rem;
   }
-  input[type="text"]:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-  .progress-section {
-    margin: 1.5rem 0;
-  }
+  input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  .progress-section { margin: 1.5rem 0; }
   .progress-label {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
   }
-  .progress-count {
-    color: var(--accent);
-    font-weight: 600;
-  }
+  .progress-count { color: var(--accent); font-weight: 600; }
   .progress-bar {
     height: 14px;
     background: var(--card);
@@ -93,17 +70,14 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    color: var(--fg);
+    color: var(--muted);
     font-size: 1.3rem;
     font-weight: 600;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
     user-select: none;
   }
-  .station:hover { border-color: var(--accent); }
   .station.done {
     background: var(--done);
     border-color: var(--done);
@@ -128,6 +102,17 @@
     font-weight: 600;
     min-height: 1.2em;
   }
+  .banner {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .banner.ok { background: rgba(127,176,105,0.15); color: var(--done); border: 1px solid var(--done); }
+  .banner.warn { background: rgba(212,160,76,0.15); color: var(--accent); border: 1px solid var(--accent); }
+  .banner.err { background: rgba(212,106,76,0.15); color: var(--err); border: 1px solid var(--err); }
+  .hint { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 0.75rem; }
 </style>
 </head>
 <body>
@@ -135,32 +120,46 @@
   <h1>Radegastův odkaz</h1>
   <div class="subtitle">Postup sběru NFC znamení</div>
 
+  <div id="banner"></div>
+
   <label for="name">Jméno</label>
   <input type="text" id="name" placeholder="Zadej své jméno" autocomplete="off">
 
   <div class="progress-section">
     <div class="progress-label">
       <span>Nasbíráno</span>
-      <span class="progress-count"><span id="count">0</span> / 8</span>
+      <span class="progress-count"><span id="count">0</span> / 7</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
     <div class="done-msg" id="doneMsg"></div>
   </div>
 
   <div class="stations" id="stations"></div>
+  <div class="hint">Stanoviště se odemkne přiložením telefonu k NFC tagu.</div>
 
   <button class="reset" id="reset">Vynulovat můj postup</button>
 </div>
 
 <script>
-  const TOTAL = 8;
+  const TOTAL = 7;
   const KEY_PREFIX = "radegast:";
+  const TOKENS = {
+    "k7m2qx9p": 1,
+    "b4t8nfd3": 2,
+    "v6r5jhg2": 3,
+    "x9c3pwl8": 4,
+    "f2s7dyn4": 5,
+    "h5a8vzm6": 6,
+    "q3w9tek5": 7
+  };
+
   const nameInput = document.getElementById("name");
   const stationsEl = document.getElementById("stations");
   const countEl = document.getElementById("count");
   const fillEl = document.getElementById("fill");
   const doneMsg = document.getElementById("doneMsg");
   const resetBtn = document.getElementById("reset");
+  const bannerEl = document.getElementById("banner");
 
   const normalize = (s) => s.trim().toLowerCase();
   const storageKey = (name) => KEY_PREFIX + normalize(name);
@@ -178,36 +177,79 @@
     localStorage.setItem(storageKey(name), JSON.stringify([...set]));
   }
 
+  function showBanner(text, kind) {
+    bannerEl.innerHTML = '<div class="banner ' + kind + '">' + text + '</div>';
+  }
+  function clearBanner() { bannerEl.innerHTML = ""; }
+
   function render() {
     const name = nameInput.value;
     const progress = loadProgress(name);
     stationsEl.innerHTML = "";
     for (let i = 1; i <= TOTAL; i++) {
-      const btn = document.createElement("button");
-      btn.className = "station" + (progress.has(i) ? " done" : "");
-      btn.textContent = i;
-      btn.disabled = !name.trim();
-      btn.addEventListener("click", () => toggle(i));
-      stationsEl.appendChild(btn);
+      const cell = document.createElement("div");
+      cell.className = "station" + (progress.has(i) ? " done" : "");
+      cell.textContent = i;
+      stationsEl.appendChild(cell);
     }
     const n = progress.size;
     countEl.textContent = n;
     fillEl.style.width = (n / TOTAL * 100) + "%";
-    doneMsg.textContent = n === TOTAL ? "Všech 8 znamení nalezeno!" : "";
+    doneMsg.textContent = n === TOTAL ? "Všech 7 znamení nalezeno!" : "";
   }
 
-  function toggle(i) {
-    const name = nameInput.value;
-    if (!name.trim()) return;
+  function readToken() {
+    const hash = location.hash.replace(/^#/, "");
+    const params = new URLSearchParams(hash);
+    let t = params.get("t");
+    if (!t) {
+      const q = new URLSearchParams(location.search);
+      t = q.get("t");
+    }
+    return t ? t.trim().toLowerCase() : null;
+  }
+
+  function consumeToken() {
+    const url = new URL(location.href);
+    url.hash = "";
+    url.searchParams.delete("t");
+    history.replaceState(null, "", url.toString());
+  }
+
+  function applyToken(token) {
+    if (!token) return;
+    const station = TOKENS[token];
+    if (!station) {
+      showBanner("Neplatný NFC tag.", "err");
+      consumeToken();
+      return;
+    }
+    const name = nameInput.value.trim();
+    if (!name) {
+      sessionStorage.setItem(KEY_PREFIX + "pendingToken", token);
+      showBanner("Zadej nejdřív své jméno — pak ti znamení " + station + " uznám.", "warn");
+      return;
+    }
     const progress = loadProgress(name);
-    progress.has(i) ? progress.delete(i) : progress.add(i);
-    saveProgress(name, progress);
+    if (progress.has(station)) {
+      showBanner("Znamení " + station + " už máš.", "warn");
+    } else {
+      progress.add(station);
+      saveProgress(name, progress);
+      showBanner("Znamení " + station + " nalezeno!", "ok");
+    }
+    sessionStorage.removeItem(KEY_PREFIX + "pendingToken");
+    consumeToken();
     render();
   }
 
   nameInput.addEventListener("input", () => {
     localStorage.setItem(KEY_PREFIX + "lastName", nameInput.value);
     render();
+    const pending = sessionStorage.getItem(KEY_PREFIX + "pendingToken");
+    if (pending && nameInput.value.trim()) {
+      applyToken(pending);
+    }
   });
 
   resetBtn.addEventListener("click", () => {
@@ -215,12 +257,15 @@
     if (!name.trim()) return;
     if (confirm("Vynulovat postup pro „" + name.trim() + "“?")) {
       localStorage.removeItem(storageKey(name));
+      clearBanner();
       render();
     }
   });
 
   nameInput.value = localStorage.getItem(KEY_PREFIX + "lastName") || "";
   render();
+  const tok = readToken() || sessionStorage.getItem(KEY_PREFIX + "pendingToken");
+  if (tok) applyToken(tok);
 </script>
 </body>
 </html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radegastův odkaz — postup</title>
+<style>
+  :root {
+    --bg: #1a1410;
+    --fg: #f5e6c8;
+    --muted: #8a7a5e;
+    --accent: #d4a04c;
+    --done: #7fb069;
+    --card: #2a1f17;
+    --border: #3d2f23;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    padding: 1.5rem 1rem;
+  }
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.25rem;
+    color: var(--accent);
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--fg);
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .progress-section {
+    margin: 1.5rem 0;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .progress-count {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .progress-bar {
+    height: 14px;
+    background: var(--card);
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--done));
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .stations {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+  .station {
+    aspect-ratio: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--fg);
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .station:hover { border-color: var(--accent); }
+  .station.done {
+    background: var(--done);
+    border-color: var(--done);
+    color: var(--bg);
+  }
+  .reset {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.6rem;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .reset:hover { color: var(--fg); }
+  .done-msg {
+    text-align: center;
+    color: var(--done);
+    margin-top: 1rem;
+    font-weight: 600;
+    min-height: 1.2em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Radegastův odkaz</h1>
+  <div class="subtitle">Postup sběru NFC znamení</div>
+
+  <label for="name">Jméno</label>
+  <input type="text" id="name" placeholder="Zadej své jméno" autocomplete="off">
+
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>Nasbíráno</span>
+      <span class="progress-count"><span id="count">0</span> / 8</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+    <div class="done-msg" id="doneMsg"></div>
+  </div>
+
+  <div class="stations" id="stations"></div>
+
+  <button class="reset" id="reset">Vynulovat můj postup</button>
+</div>
+
+<script>
+  const TOTAL = 8;
+  const KEY_PREFIX = "radegast:";
+  const nameInput = document.getElementById("name");
+  const stationsEl = document.getElementById("stations");
+  const countEl = document.getElementById("count");
+  const fillEl = document.getElementById("fill");
+  const doneMsg = document.getElementById("doneMsg");
+  const resetBtn = document.getElementById("reset");
+
+  const normalize = (s) => s.trim().toLowerCase();
+  const storageKey = (name) => KEY_PREFIX + normalize(name);
+
+  function loadProgress(name) {
+    if (!name) return new Set();
+    try {
+      const raw = localStorage.getItem(storageKey(name));
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch { return new Set(); }
+  }
+
+  function saveProgress(name, set) {
+    if (!name) return;
+    localStorage.setItem(storageKey(name), JSON.stringify([...set]));
+  }
+
+  function render() {
+    const name = nameInput.value;
+    const progress = loadProgress(name);
+    stationsEl.innerHTML = "";
+    for (let i = 1; i <= TOTAL; i++) {
+      const btn = document.createElement("button");
+      btn.className = "station" + (progress.has(i) ? " done" : "");
+      btn.textContent = i;
+      btn.disabled = !name.trim();
+      btn.addEventListener("click", () => toggle(i));
+      stationsEl.appendChild(btn);
+    }
+    const n = progress.size;
+    countEl.textContent = n;
+    fillEl.style.width = (n / TOTAL * 100) + "%";
+    doneMsg.textContent = n === TOTAL ? "Všech 8 znamení nalezeno!" : "";
+  }
+
+  function toggle(i) {
+    const name = nameInput.value;
+    if (!name.trim()) return;
+    const progress = loadProgress(name);
+    progress.has(i) ? progress.delete(i) : progress.add(i);
+    saveProgress(name, progress);
+    render();
+  }
+
+  nameInput.addEventListener("input", () => {
+    localStorage.setItem(KEY_PREFIX + "lastName", nameInput.value);
+    render();
+  });
+
+  resetBtn.addEventListener("click", () => {
+    const name = nameInput.value;
+    if (!name.trim()) return;
+    if (confirm("Vynulovat postup pro „" + name.trim() + "“?")) {
+      localStorage.removeItem(storageKey(name));
+      render();
+    }
+  });
+
+  nameInput.value = localStorage.getItem(KEY_PREFIX + "lastName") || "";
+  render();
+</script>
+</body>
+</html>

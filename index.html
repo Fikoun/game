@@ -2,270 +2,809 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Radegastův odkaz — postup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Radegastův odkaz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #1a1410;
-    --fg: #f5e6c8;
-    --muted: #8a7a5e;
-    --accent: #d4a04c;
-    --done: #7fb069;
-    --card: #2a1f17;
-    --border: #3d2f23;
-    --err: #d46a4c;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--fg);
-    min-height: 100vh;
-    padding: 1.5rem 1rem;
-  }
-  .wrap { max-width: 480px; margin: 0 auto; }
-  h1 { font-size: 1.5rem; margin: 0 0 0.25rem; color: var(--accent); }
-  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
-  label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem; }
-  input[type="text"] {
-    width: 100%;
-    padding: 0.7rem 0.9rem;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--fg);
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-  input[type="text"]:focus { outline: none; border-color: var(--accent); }
-  .progress-section { margin: 1.5rem 0; }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-  }
-  .progress-count { color: var(--accent); font-weight: 600; }
-  .progress-bar {
-    height: 14px;
-    background: var(--card);
-    border-radius: 7px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--done));
-    width: 0%;
-    transition: width 0.4s ease;
-  }
-  .stations {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem;
-    margin-top: 1rem;
-  }
-  .station {
-    aspect-ratio: 1;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--muted);
-    font-size: 1.3rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-  }
-  .station.done {
-    background: var(--done);
-    border-color: var(--done);
-    color: var(--bg);
-  }
-  .reset {
-    margin-top: 1.5rem;
-    width: 100%;
-    padding: 0.6rem;
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-  .reset:hover { color: var(--fg); }
-  .done-msg {
-    text-align: center;
-    color: var(--done);
-    margin-top: 1rem;
-    font-weight: 600;
-    min-height: 1.2em;
-  }
-  .banner {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-    text-align: center;
-  }
-  .banner.ok { background: rgba(127,176,105,0.15); color: var(--done); border: 1px solid var(--done); }
-  .banner.warn { background: rgba(212,160,76,0.15); color: var(--accent); border: 1px solid var(--accent); }
-  .banner.err { background: rgba(212,106,76,0.15); color: var(--err); border: 1px solid var(--err); }
-  .hint { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 0.75rem; }
+:root {
+  --bg: #0b0e14;
+  --bg-2: #131722;
+  --ink: #eadfc5;
+  --ink-dim: #8c7d5e;
+  --ink-faint: #4a3f30;
+  --ember: #e8a04e;
+  --ember-bright: #ffc878;
+  --gold: #f3d57f;
+  --moss: #b9963c;
+  --crimson: #c4533a;
+  --moonlight: #6a8caf;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'EB Garamond', Georgia, serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 40%, rgba(232,160,78,0.09), transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(106,140,175,0.07), transparent 70%),
+    radial-gradient(ellipse at 20% 90%, rgba(196,83,58,0.05), transparent 70%),
+    var(--bg);
+  min-height: 100dvh;
+  height: 100dvh;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  z-index: 1;
+}
+
+.embers {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+.ember-particle {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ember-bright), var(--ember) 40%, transparent 70%);
+  filter: blur(0.4px);
+  opacity: 0;
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0%   { transform: translate3d(0,0,0); opacity: 0; }
+  10%  { opacity: 0.9; }
+  85%  { opacity: 0.5; }
+  100% { transform: translate3d(var(--dx,30px), -110vh, 0); opacity: 0; }
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem 1.1rem 0;
+  position: relative;
+  z-index: 5;
+  gap: 1rem;
+}
+.brand {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 4vw, 1.45rem);
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-shadow: 0 0 24px rgba(243,213,127,0.3);
+  line-height: 1.1;
+}
+.brand small {
+  display: block;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.08em;
+  margin-top: 0.15rem;
+  font-weight: normal;
+}
+.player {
+  text-align: right;
+  flex-shrink: 0;
+  max-width: 50%;
+}
+.player .label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+.player .name {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 400;
+  font-size: clamp(0.85rem, 3vw, 1rem);
+  color: var(--ember);
+  letter-spacing: 0.02em;
+  display: inline-block;
+  line-height: 1.2;
+  text-align: right;
+  word-wrap: break-word;
+}
+
+.stage {
+  flex: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  z-index: 5;
+  min-height: 0;
+  padding: 0.4rem 0.5rem;
+}
+.heptagon-wrap {
+  position: relative;
+  width: min(94vw, 72vh);
+  max-width: 580px;
+  aspect-ratio: 1;
+}
+.heptagon-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.center-readout {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.center-readout .inner {
+  text-align: center;
+  transform: translateY(-3%);
+}
+.center-readout .big {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 13vw, 4.8rem);
+  color: var(--gold);
+  line-height: 1;
+  text-shadow:
+    0 0 24px rgba(243,213,127,0.45),
+    0 0 60px rgba(232,160,78,0.18);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.3,1.4);
+}
+.center-readout .big.bump { transform: scale(1.18); }
+.center-readout .of {
+  display: block;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.85rem, 2.4vw, 1.05rem);
+  color: var(--ink-dim);
+  margin-top: 0.15rem;
+  letter-spacing: 0.04em;
+}
+.center-readout .caption {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.6rem, 1.9vw, 0.75rem);
+  color: var(--ink-faint);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+.hep-edge {
+  fill: none;
+  stroke: rgba(232,160,78,0.18);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  transition: stroke 0.6s, stroke-width 0.6s, stroke-dasharray 0.6s;
+}
+.hep-edge.lit {
+  stroke: var(--ember);
+  stroke-width: 2;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 5px rgba(232,160,78,0.7));
+}
+
+.node-bg {
+  fill: rgba(11,14,20,0.92);
+  stroke: var(--ember);
+  stroke-width: 1.5;
+  stroke-opacity: 0.45;
+  transition: fill 0.5s, stroke 0.5s, stroke-opacity 0.5s, filter 0.5s;
+}
+.node-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 24px;
+  fill: var(--ink-dim);
+  text-anchor: middle;
+  dominant-baseline: central;
+  user-select: none;
+  transition: fill 0.5s;
+}
+.node-pulse {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 1;
+  stroke-opacity: 0.25;
+  animation: pulse 3.4s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes pulse {
+  0%, 100% { stroke-opacity: 0.12; transform: scale(0.95); }
+  50%      { stroke-opacity: 0.45; transform: scale(1.1); }
+}
+.node.done .node-bg {
+  fill: var(--ember);
+  stroke: var(--ember-bright);
+  stroke-opacity: 1;
+  filter: drop-shadow(0 0 14px rgba(232,160,78,0.7));
+}
+.node.done .node-num { fill: var(--bg); }
+.node.done .node-pulse { display: none; }
+
+.star-bg {
+  fill: rgba(11,14,20,0.92);
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-opacity: 0.55;
+  transition: fill 0.5s, stroke 0.5s, stroke-opacity 0.5s, filter 0.5s;
+}
+.star-aura {
+  fill: var(--gold);
+  opacity: 0.07;
+  filter: blur(8px);
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: starHalo 4.2s ease-in-out infinite;
+}
+@keyframes starHalo {
+  0%, 100% { opacity: 0.07; transform: scale(0.95); }
+  50%      { opacity: 0.18; transform: scale(1.1); }
+}
+.node.star .node-num { fill: var(--gold); font-size: 22px; }
+.node.star.done .star-bg {
+  fill: var(--gold);
+  stroke: #fff6d4;
+  stroke-opacity: 1;
+  filter: drop-shadow(0 0 22px rgba(243,213,127,0.85));
+}
+.node.star.done .node-num { fill: var(--bg); }
+.node.star.done .star-aura { opacity: 0.32; animation-duration: 2.1s; }
+
+.ring-pulse {
+  fill: none;
+  stroke-width: 2;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: ringPulse 0.95s ease-out forwards;
+}
+@keyframes ringPulse {
+  0%   { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(3.6); opacity: 0; }
+}
+
+.footbar {
+  display: flex;
+  justify-content: center;
+  padding: 0.4rem 1.25rem max(0.9rem, env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 5;
+}
+.reset-btn {
+  background: transparent;
+  border: none;
+  color: var(--ink-faint);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  transition: color 0.2s, letter-spacing 0.2s;
+}
+.reset-btn:hover { color: var(--ink-dim); letter-spacing: 0.18em; }
+
+.flash-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(11,14,20,0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.flash-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.flashcard {
+  position: fixed;
+  z-index: 25;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -45%) scale(0.94);
+  width: min(90vw, 380px);
+  background: linear-gradient(180deg, rgba(34,26,18,0.97), rgba(15,12,9,0.97));
+  border: 1px solid rgba(232,160,78,0.45);
+  border-radius: 14px;
+  padding: 1.5rem 1.3rem 1.2rem;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.5s cubic-bezier(0.2,0.8,0.3,1.25);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.65),
+    inset 0 0 60px rgba(232,160,78,0.07),
+    0 0 80px rgba(232,160,78,0.22);
+  cursor: pointer;
+}
+.flashcard.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.flashcard.final {
+  border-color: rgba(243,213,127,0.75);
+  background: linear-gradient(180deg, rgba(46,32,18,0.97), rgba(20,14,10,0.97));
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.65),
+    inset 0 0 100px rgba(243,213,127,0.1),
+    0 0 140px rgba(243,213,127,0.35);
+}
+.flash-number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.36em;
+  color: var(--ember);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.flashcard.final .flash-number { color: var(--gold); }
+.flash-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.2rem, 4.5vw, 1.45rem);
+  color: var(--gold);
+  margin-bottom: 0.7rem;
+  line-height: 1.2;
+}
+.flash-body {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 3.5vw, 1.08rem);
+  color: var(--ink);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+.flash-hint {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.36em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.burst {
+  position: fixed;
+  pointer-events: none;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ember-bright), var(--ember) 40%, transparent 70%);
+  z-index: 15;
+  animation: burst 0.95s ease-out forwards;
+}
+@keyframes burst {
+  0%   { transform: translate(0,0) scale(1);   opacity: 1; }
+  100% { transform: translate(var(--bx), var(--by)) scale(0.15); opacity: 0; }
+}
+
+.screen-flash {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 14;
+  background: radial-gradient(circle at 50% 55%, rgba(232,160,78,0.28), transparent 60%);
+  animation: screenFlash 0.6s ease-out forwards;
+}
+.screen-flash.final { background: radial-gradient(circle at 50% 55%, rgba(243,213,127,0.4), transparent 65%); }
+@keyframes screenFlash {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.toast {
+  position: fixed;
+  top: 4.5rem; left: 50%;
+  transform: translateX(-50%) translateY(-14px);
+  background: rgba(196,83,58,0.95);
+  color: #fff;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  z-index: 30;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 0.35s, transform 0.35s;
+  font-family: 'EB Garamond', serif;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-height: 640px) {
+  .center-readout .big { font-size: 2.6rem; }
+  .topbar { padding: 0.6rem 1rem 0; }
+  .center-readout .caption { margin-top: 0.3rem; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Radegastův odkaz</h1>
-  <div class="subtitle">Postup sběru NFC znamení</div>
 
-  <div id="banner"></div>
+<div class="embers" id="embers"></div>
 
-  <label for="name">Jméno</label>
-  <input type="text" id="name" placeholder="Zadej své jméno" autocomplete="off">
-
-  <div class="progress-section">
-    <div class="progress-label">
-      <span>Nasbíráno</span>
-      <span class="progress-count"><span id="count">0</span> / 7</span>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
-    <div class="done-msg" id="doneMsg"></div>
+<header class="topbar">
+  <div class="brand">Radegastův odkaz<small>noční stezka znamení</small></div>
+  <div class="player">
+    <span class="label">poutník</span>
+    <span class="name" id="playerName">—</span>
   </div>
+</header>
 
-  <div class="stations" id="stations"></div>
-  <div class="hint">Stanoviště se odemkne přiložením telefonu k NFC tagu.</div>
+<main class="stage">
+  <div class="heptagon-wrap">
+    <svg class="heptagon-svg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" id="heptagonSvg">
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+    <div class="center-readout">
+      <div class="inner">
+        <div class="big" id="bigCount"><span id="count">0</span></div>
+        <div class="of">ze sedmi</div>
+        <div class="caption">znamení nalezeno</div>
+      </div>
+    </div>
+  </div>
+</main>
 
-  <button class="reset" id="reset">Vynulovat můj postup</button>
+<footer class="footbar">
+  <button class="reset-btn" id="reset">začít znovu</button>
+</footer>
+
+<div class="flash-backdrop" id="flashBackdrop"></div>
+<div class="flashcard" id="flashcard" role="dialog" aria-modal="true">
+  <div class="flash-number" id="flashNumber"></div>
+  <div class="flash-title" id="flashTitle"></div>
+  <div class="flash-body" id="flashBody"></div>
+  <div class="flash-hint">klepni pro pokračování</div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-  const TOTAL = 7;
-  const KEY_PREFIX = "radegast:";
-  const TOKENS = {
-    "k7m2qx9p": 1,
-    "b4t8nfd3": 2,
-    "v6r5jhg2": 3,
-    "x9c3pwl8": 4,
-    "f2s7dyn4": 5,
-    "h5a8vzm6": 6,
-    "q3w9tek5": 7
+(function () {
+  const STATIONS = 7;
+  const SK = {
+    name: 'radegast:playerName',
+    progress: (n) => 'radegast:progress:' + n.toLowerCase().replace(/\s+/g, '_'),
   };
 
-  const nameInput = document.getElementById("name");
-  const stationsEl = document.getElementById("stations");
-  const countEl = document.getElementById("count");
-  const fillEl = document.getElementById("fill");
-  const doneMsg = document.getElementById("doneMsg");
-  const resetBtn = document.getElementById("reset");
-  const bannerEl = document.getElementById("banner");
+  const TOKENS = {
+    'k7m2qx9p': 1,
+    'b4t8nfd3': 2,
+    'v6r5jhg2': 3,
+    'x9c3pwl8': 4,
+    'f2s7dyn4': 5,
+    'h5a8vzm6': 6,
+    'q3w9tek5': 7,
+  };
 
-  const normalize = (s) => s.trim().toLowerCase();
-  const storageKey = (name) => KEY_PREFIX + normalize(name);
+  const ADJECTIVES = [
+    'Bujarý','Vlasatý','Mlčenlivý','Chytrý','Lstivý','Tajemný','Bezbradý',
+    'Smělý','Vousatý','Bosý','Dřímavý','Roztržitý','Bujný','Drsný','Statečný',
+    'Mlsný','Plíživý','Hladový','Pochybný','Záhadný','Bručivý','Vzteklý',
+    'Spící','Tichý','Brblavý','Loupežný','Smolný','Hloubavý','Mrzutý','Zarputilý'
+  ];
+  const NOUNS = [
+    'Valach','Bača','Vlk','Hřib','Brouk','Smrk','Skřítek','Bohouš','Jurko',
+    'Vondra','Mirek','Lojza','Pepa','Hospodář','Pasáček','Strážce','Šepot',
+    'Stín','Modřín','Bukáč','Brkoslav','Mech','Pařez','Vincek','Frantík',
+    'Houslař','Salašník','Hejkal','Bezdomek','Cimbálník','Ovčák'
+  ];
+  const LOCATIONS = [
+    'z Pusteven','od Radhoště','z Beskyd','ze Soláně','od Vsetína',
+    'z Horní Bečvy','od Lysé hory','od Pražma','z Trojanovic','od Rožnova'
+  ];
 
+  const STATION_MSG = [
+    null,
+    { title: 'I. Vstup do hvozdu',
+      body: 'Stín smrku tě sleduje. Strach je nejhorší vlk — nech ho běžet napřed.' },
+    { title: 'II. Sestup k vodě',
+      body: 'Cesta klesá k potoku. Voda v noci klame oko — hledej kámen, na kterém spí žába.' },
+    { title: 'III. Křižovatka',
+      body: 'Vlevo zní havraní krák, vpravo větve šeptají. Drž se značky — folklor klame, reflexka ne.' },
+    { title: 'IV. Pod skálou',
+      body: 'Skála se zvedá. Drž se světla a nedívej se za sebe — to, co je za tebou, není tvé.' },
+    { title: 'V. Mlhou',
+      body: 'Reflexní páska tě vede, ne stín. Pokud někoho slyšíš zpívat — jen pokračuj.' },
+    { title: 'VI. Hřeben',
+      body: 'Vítr nese kosti slov dávných pastýřů. Nelámej je — vyslechni je.' },
+    { title: 'VII. Radhošť',
+      body: 'Hvězda zazářila. Předstup před strážce a vyřkni vzkaz, který jsi nesl celou cestu.' },
+  ];
+
+  const FINAL_MSG = {
+    title: 'Odkaz splněn',
+    body: 'Všech sedm znamení v rukou. Radegast tě propustil. Najdi cestu zpět — strážce čeká.'
+  };
+
+  const rand = (a) => a[Math.floor(Math.random() * a.length)];
+  function generateName() {
+    let n = rand(ADJECTIVES) + ' ' + rand(NOUNS);
+    if (Math.random() < 0.55) n += ' ' + rand(LOCATIONS);
+    return n;
+  }
+  function getOrCreateName() {
+    let n = localStorage.getItem(SK.name);
+    if (!n) { n = generateName(); localStorage.setItem(SK.name, n); }
+    return n;
+  }
   function loadProgress(name) {
-    if (!name) return new Set();
     try {
-      const raw = localStorage.getItem(storageKey(name));
-      return new Set(raw ? JSON.parse(raw) : []);
+      const raw = localStorage.getItem(SK.progress(name));
+      return new Set((raw ? JSON.parse(raw) : []).filter(x => typeof x === 'number'));
     } catch { return new Set(); }
   }
-
   function saveProgress(name, set) {
-    if (!name) return;
-    localStorage.setItem(storageKey(name), JSON.stringify([...set]));
+    localStorage.setItem(SK.progress(name), JSON.stringify([...set]));
   }
 
-  function showBanner(text, kind) {
-    bannerEl.innerHTML = '<div class="banner ' + kind + '">' + text + '</div>';
+  const CX = 250, CY = 250, R = 178;
+  const NS = 'http://www.w3.org/2000/svg';
+  function angleFor(i) { return (90 - i * (360 / STATIONS)) * Math.PI / 180; }
+  function posFor(i) {
+    const a = angleFor(i);
+    return { x: CX + R * Math.cos(a), y: CY + R * Math.sin(a) };
   }
-  function clearBanner() { bannerEl.innerHTML = ""; }
+  function starPath(cx, cy, points, outerR, innerR) {
+    const out = [];
+    const rot = -Math.PI / 2;
+    for (let i = 0; i < points * 2; i++) {
+      const r = i % 2 === 0 ? outerR : innerR;
+      const a = rot + (i * Math.PI) / points;
+      out.push((i === 0 ? 'M' : 'L') + (cx + r * Math.cos(a)).toFixed(2) + ',' + (cy + r * Math.sin(a)).toFixed(2));
+    }
+    out.push('Z');
+    return out.join(' ');
+  }
+
+  const edgesG = document.getElementById('edges');
+  const nodesG = document.getElementById('nodes');
+
+  function buildSvg() {
+    edgesG.innerHTML = '';
+    nodesG.innerHTML = '';
+    for (let i = 1; i <= STATIONS; i++) {
+      const from = posFor(i);
+      const toIdx = i === STATIONS ? 1 : i + 1;
+      const to = posFor(toIdx);
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('x1', from.x.toFixed(2));
+      line.setAttribute('y1', from.y.toFixed(2));
+      line.setAttribute('x2', to.x.toFixed(2));
+      line.setAttribute('y2', to.y.toFixed(2));
+      line.setAttribute('class', 'hep-edge');
+      line.dataset.from = i;
+      line.dataset.to = toIdx;
+      edgesG.appendChild(line);
+    }
+    for (let i = 1; i <= STATIONS; i++) {
+      const p = posFor(i);
+      const g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'node' + (i === 7 ? ' star' : ''));
+      g.setAttribute('transform', `translate(${p.x.toFixed(2)},${p.y.toFixed(2)})`);
+      g.dataset.i = i;
+      if (i === 7) {
+        const aura = document.createElementNS(NS, 'path');
+        aura.setAttribute('class', 'star-aura');
+        aura.setAttribute('d', starPath(0, 0, 5, 54, 23));
+        g.appendChild(aura);
+        const bg = document.createElementNS(NS, 'path');
+        bg.setAttribute('class', 'star-bg');
+        bg.setAttribute('d', starPath(0, 0, 5, 38, 16));
+        g.appendChild(bg);
+      } else {
+        const pulse = document.createElementNS(NS, 'circle');
+        pulse.setAttribute('class', 'node-pulse');
+        pulse.setAttribute('r', 30);
+        g.appendChild(pulse);
+        const bg = document.createElementNS(NS, 'circle');
+        bg.setAttribute('class', 'node-bg');
+        bg.setAttribute('r', 26);
+        g.appendChild(bg);
+      }
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', 'node-num');
+      t.setAttribute('x', 0);
+      t.setAttribute('y', i === 7 ? 1 : 0);
+      t.textContent = i;
+      g.appendChild(t);
+      nodesG.appendChild(g);
+    }
+  }
+
+  let currentName = '';
+  let progress = new Set();
 
   function render() {
-    const name = nameInput.value;
-    const progress = loadProgress(name);
-    stationsEl.innerHTML = "";
-    for (let i = 1; i <= TOTAL; i++) {
-      const cell = document.createElement("div");
-      cell.className = "station" + (progress.has(i) ? " done" : "");
-      cell.textContent = i;
-      stationsEl.appendChild(cell);
-    }
-    const n = progress.size;
-    countEl.textContent = n;
-    fillEl.style.width = (n / TOTAL * 100) + "%";
-    doneMsg.textContent = n === TOTAL ? "Všech 7 znamení nalezeno!" : "";
+    document.getElementById('playerName').textContent = currentName;
+    document.getElementById('count').textContent = progress.size;
+    document.querySelectorAll('.node').forEach(node => {
+      node.classList.toggle('done', progress.has(+node.dataset.i));
+    });
+    document.querySelectorAll('.hep-edge').forEach(line => {
+      const lit = progress.has(+line.dataset.from) && progress.has(+line.dataset.to);
+      line.classList.toggle('lit', lit);
+    });
   }
 
-  function readToken() {
-    const hash = location.hash.replace(/^#/, "");
-    const params = new URLSearchParams(hash);
-    let t = params.get("t");
-    if (!t) {
-      const q = new URLSearchParams(location.search);
-      t = q.get("t");
+  function bumpCount() {
+    const el = document.getElementById('bigCount');
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 420);
+  }
+
+  function ringPulse(stationIdx) {
+    const node = document.querySelector(`.node[data-i="${stationIdx}"]`);
+    if (!node) return;
+    const ring = document.createElementNS(NS, 'circle');
+    ring.setAttribute('cx', 0);
+    ring.setAttribute('cy', 0);
+    ring.setAttribute('r', stationIdx === 7 ? 34 : 28);
+    ring.setAttribute('class', 'ring-pulse');
+    ring.setAttribute('stroke', stationIdx === 7 ? '#f3d57f' : '#e8a04e');
+    node.appendChild(ring);
+    setTimeout(() => ring.remove(), 1000);
+  }
+
+  function spawnBurst(cx, cy, count, color) {
+    for (let k = 0; k < count; k++) {
+      const p = document.createElement('div');
+      p.className = 'burst';
+      const ang = (Math.PI * 2 * k) / count + (Math.random() - 0.5) * 0.6;
+      const dist = 70 + Math.random() * 90;
+      p.style.left = (cx - 2.5) + 'px';
+      p.style.top = (cy - 2.5) + 'px';
+      p.style.setProperty('--bx', (Math.cos(ang) * dist).toFixed(1) + 'px');
+      p.style.setProperty('--by', (Math.sin(ang) * dist).toFixed(1) + 'px');
+      if (color) p.style.background = `radial-gradient(circle, ${color}, transparent 70%)`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1100);
     }
-    return t ? t.trim().toLowerCase() : null;
+  }
+
+  function screenFlash(final) {
+    const f = document.createElement('div');
+    f.className = 'screen-flash' + (final ? ' final' : '');
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 620);
+  }
+
+  function nodeScreenCenter(i) {
+    const node = document.querySelector(`.node[data-i="${i}"]`);
+    if (!node) return null;
+    const r = node.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  const flashEl = document.getElementById('flashcard');
+  const backdropEl = document.getElementById('flashBackdrop');
+  function showFlash(stationIdx, isFinal) {
+    const msg = isFinal ? FINAL_MSG : STATION_MSG[stationIdx];
+    if (!msg) return;
+    document.getElementById('flashNumber').textContent = isFinal
+      ? 'odkaz dovršen'
+      : 'znamení ' + stationIdx + ' ze sedmi';
+    document.getElementById('flashTitle').textContent = msg.title;
+    document.getElementById('flashBody').textContent = msg.body;
+    flashEl.classList.toggle('final', !!isFinal);
+    requestAnimationFrame(() => {
+      backdropEl.classList.add('open');
+      flashEl.classList.add('open');
+    });
+  }
+  function hideFlash() {
+    backdropEl.classList.remove('open');
+    flashEl.classList.remove('open');
+  }
+  backdropEl.addEventListener('click', hideFlash);
+  flashEl.addEventListener('click', hideFlash);
+
+  let toastTimer;
+  function toast(text) {
+    const t = document.getElementById('toast');
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
   }
 
   function consumeToken() {
     const url = new URL(location.href);
-    url.hash = "";
-    url.searchParams.delete("t");
-    history.replaceState(null, "", url.toString());
+    url.hash = '';
+    url.searchParams.delete('t');
+    history.replaceState(null, '', url.pathname + url.search);
+  }
+  function readToken() {
+    const hash = location.hash.replace(/^#/, '');
+    const hp = new URLSearchParams(hash);
+    let t = hp.get('t');
+    if (!t) {
+      const qp = new URLSearchParams(location.search);
+      t = qp.get('t');
+    }
+    return t ? t.trim().toLowerCase() : null;
+  }
+
+  function celebrate(stationIdx, isFinal) {
+    const c = nodeScreenCenter(stationIdx);
+    ringPulse(stationIdx);
+    screenFlash(isFinal);
+    if (c) spawnBurst(c.x, c.y, isFinal ? 30 : (stationIdx === 7 ? 24 : 16), isFinal || stationIdx === 7 ? '#f3d57f' : undefined);
+    bumpCount();
+    setTimeout(() => showFlash(stationIdx, isFinal), 620);
   }
 
   function applyToken(token) {
-    if (!token) return;
     const station = TOKENS[token];
-    if (!station) {
-      showBanner("Neplatný NFC tag.", "err");
-      consumeToken();
-      return;
-    }
-    const name = nameInput.value.trim();
-    if (!name) {
-      sessionStorage.setItem(KEY_PREFIX + "pendingToken", token);
-      showBanner("Zadej nejdřív své jméno — pak ti znamení " + station + " uznám.", "warn");
-      return;
-    }
-    const progress = loadProgress(name);
-    if (progress.has(station)) {
-      showBanner("Znamení " + station + " už máš.", "warn");
-    } else {
-      progress.add(station);
-      saveProgress(name, progress);
-      showBanner("Znamení " + station + " nalezeno!", "ok");
-    }
-    sessionStorage.removeItem(KEY_PREFIX + "pendingToken");
     consumeToken();
+    if (!station) { toast('neznámé znamení'); return; }
+    if (progress.has(station)) {
+      toast('znamení ' + station + ' už máš');
+      return;
+    }
+    progress.add(station);
+    saveProgress(currentName, progress);
     render();
+    const isFinal = progress.size === STATIONS;
+    celebrate(station, isFinal);
   }
 
-  nameInput.addEventListener("input", () => {
-    localStorage.setItem(KEY_PREFIX + "lastName", nameInput.value);
+  function makeEmbers() {
+    const wrap = document.getElementById('embers');
+    const n = Math.min(30, Math.max(16, Math.floor(window.innerWidth / 32)));
+    for (let i = 0; i < n; i++) {
+      const e = document.createElement('div');
+      e.className = 'ember-particle';
+      e.style.left = (Math.random() * 100) + '%';
+      const sz = 2 + Math.random() * 4;
+      e.style.width = sz + 'px';
+      e.style.height = sz + 'px';
+      e.style.animationDuration = (9 + Math.random() * 13) + 's';
+      e.style.animationDelay = -(Math.random() * 22) + 's';
+      e.style.setProperty('--dx', ((Math.random() - 0.5) * 140).toFixed(0) + 'px');
+      wrap.appendChild(e);
+    }
+  }
+
+  document.getElementById('reset').addEventListener('click', () => {
+    if (!confirm('Začít znovu? Ztratíš nasbíraná znamení a dostaneš nové jméno.')) return;
+    localStorage.removeItem(SK.progress(currentName));
+    localStorage.removeItem(SK.name);
+    currentName = getOrCreateName();
+    progress = loadProgress(currentName);
     render();
-    const pending = sessionStorage.getItem(KEY_PREFIX + "pendingToken");
-    if (pending && nameInput.value.trim()) {
-      applyToken(pending);
-    }
   });
 
-  resetBtn.addEventListener("click", () => {
-    const name = nameInput.value;
-    if (!name.trim()) return;
-    if (confirm("Vynulovat postup pro „" + name.trim() + "“?")) {
-      localStorage.removeItem(storageKey(name));
-      clearBanner();
-      render();
-    }
-  });
-
-  nameInput.value = localStorage.getItem(KEY_PREFIX + "lastName") || "";
+  buildSvg();
+  makeEmbers();
+  currentName = getOrCreateName();
+  progress = loadProgress(currentName);
   render();
-  const tok = readToken() || sessionStorage.getItem(KEY_PREFIX + "pendingToken");
+  const tok = readToken();
   if (tok) applyToken(tok);
+})();
 </script>
 </body>
 </html>

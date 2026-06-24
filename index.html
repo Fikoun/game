@@ -77,31 +77,32 @@ body::after {
 
 .topbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
-  padding: 1rem 1.1rem 0;
+  padding: 1.4rem 1.1rem 0.4rem;
   position: relative;
   z-index: 5;
-  gap: 1rem;
 }
 .brand {
   font-family: 'Cinzel Decorative', serif;
   font-weight: 700;
-  font-size: clamp(1.05rem, 4vw, 1.45rem);
-  letter-spacing: 0.06em;
+  font-size: clamp(1.6rem, 6.5vw, 2.4rem);
+  letter-spacing: 0.08em;
   color: var(--gold);
-  text-shadow: 0 0 24px rgba(243,213,127,0.3);
-  line-height: 1.1;
+  text-shadow: 0 0 28px rgba(243,213,127,0.4), 0 0 60px rgba(232,160,78,0.2);
+  line-height: 1.05;
+  text-align: center;
 }
 .brand small {
   display: block;
   font-family: 'EB Garamond', serif;
   font-style: italic;
-  font-size: 0.72rem;
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
   color: var(--ink-dim);
-  letter-spacing: 0.08em;
-  margin-top: 0.15rem;
+  letter-spacing: 0.18em;
+  margin-top: 0.35rem;
   font-weight: normal;
+  text-transform: lowercase;
 }
 .hint-emoji {
   font-size: 2.2rem;

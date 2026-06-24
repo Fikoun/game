@@ -708,13 +708,12 @@ body::after {
 
   function markStation(station) {
     consumePuzzleParam();
-    if (progress.has(station)) {
-      toast('znamení ' + station + ' už máš');
-      return;
+    const alreadyHad = progress.has(station);
+    if (!alreadyHad) {
+      progress.add(station);
+      saveProgress(progress);
+      render();
     }
-    progress.add(station);
-    saveProgress(progress);
-    render();
     const isFinal = progress.size === STATIONS;
     celebrate(station, isFinal);
   }

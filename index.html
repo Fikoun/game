@@ -681,10 +681,18 @@ body::after {
     toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
   }
 
+  // Staré NFC tagy mají URL `?t=KÓD` se 4-místným kódem.
+  // Nechávám podporu, aby původně nalepené tagy fungovaly bez přepisování.
+  const LEGACY_TOKENS = {
+    '7421': 1, '3058': 2, '8164': 3, '2935': 4,
+    '6072': 5, '4819': 6, '5293': 7,
+  };
+
   function consumePuzzleParam() {
     const url = new URL(location.href);
     url.hash = '';
     url.searchParams.delete('p');
+    url.searchParams.delete('t');
     history.replaceState(null, '', url.pathname + url.search);
   }
   function readStationParam() {
@@ -692,9 +700,13 @@ body::after {
     const hp = new URLSearchParams(hash);
     const qp = new URLSearchParams(location.search);
     const p = hp.get('p') || qp.get('p');
-    if (!p) return null;
-    const n = parseInt(p, 10);
-    return (n >= 1 && n <= STATIONS) ? n : null;
+    if (p) {
+      const n = parseInt(p, 10);
+      if (n >= 1 && n <= STATIONS) return n;
+    }
+    const t = (hp.get('t') || qp.get('t') || '').trim().toLowerCase();
+    if (t && LEGACY_TOKENS[t]) return LEGACY_TOKENS[t];
+    return null;
   }
 
   function celebrate(stationIdx, isFinal) {

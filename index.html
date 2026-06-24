@@ -247,6 +247,158 @@ body::after {
   cursor: pointer;
 }
 .help-close:hover { color: var(--ink-dim); }
+
+.puzzle-modal {
+  position: fixed;
+  z-index: 25;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -45%) scale(0.94);
+  width: min(94vw, 440px);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(34,26,18,0.97), rgba(15,12,9,0.97));
+  border: 1px solid rgba(232,160,78,0.55);
+  border-radius: 14px;
+  padding: 1.4rem 1.2rem 1.2rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s, transform 0.4s cubic-bezier(0.2,0.8,0.3,1.25);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.65),
+    inset 0 0 70px rgba(232,160,78,0.08),
+    0 0 100px rgba(232,160,78,0.28);
+}
+.puzzle-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.puzzle-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.36em;
+  color: var(--ember);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+.puzzle-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.1rem, 4.2vw, 1.35rem);
+  color: var(--gold);
+  text-align: center;
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+.puzzle-intro {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--ink-dim);
+  text-align: center;
+  margin: 0 0 0.9rem;
+  line-height: 1.45;
+}
+.cipher-block {
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: clamp(0.95rem, 3.4vw, 1.1rem);
+  color: var(--ember-bright);
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(232,160,78,0.25);
+  border-radius: 8px;
+  padding: 0.8rem 0.6rem;
+  text-align: center;
+  margin: 0 0 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+.helper-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.helper-table {
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  background: rgba(0,0,0,0.18);
+  border-radius: 6px;
+  padding: 0.55rem 0.6rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.15rem 0.7rem;
+}
+.helper-table .cell {
+  white-space: nowrap;
+}
+.puzzle-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+.puzzle-input {
+  flex: 1;
+  background: rgba(11,14,20,0.7);
+  border: 1px solid rgba(232,160,78,0.4);
+  color: var(--ink);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+  padding: 0.6rem 0.4rem;
+  border-radius: 6px;
+  min-width: 0;
+  width: 100%;
+}
+.puzzle-input:focus {
+  outline: none;
+  border-color: var(--ember);
+  background: rgba(11,14,20,0.9);
+}
+.puzzle-submit {
+  background: var(--ember);
+  color: var(--bg);
+  border: none;
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  padding: 0 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.puzzle-submit:hover { background: var(--ember-bright); }
+.puzzle-close {
+  display: block;
+  margin: 0.9rem auto 0;
+  background: transparent;
+  border: none;
+  color: var(--ink-faint);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+.puzzle-close:hover { color: var(--ink-dim); }
+
+.hint-emoji {
+  font-size: 2.2rem;
+  display: block;
+  text-align: center;
+  margin: 0.2rem 0 0.5rem;
+  filter: drop-shadow(0 0 12px rgba(232,160,78,0.45));
+}
 .player .label {
   display: block;
   font-size: 0.65rem;
@@ -608,6 +760,21 @@ body::after {
   <button class="help-close" id="helpClose" type="button">zavřít</button>
 </div>
 
+<div class="flash-backdrop" id="puzzleBackdrop"></div>
+<div class="puzzle-modal" id="puzzleModal" role="dialog" aria-modal="true" aria-labelledby="puzzleTitle">
+  <div class="puzzle-num" id="puzzleNum"></div>
+  <h2 class="puzzle-title" id="puzzleTitle"></h2>
+  <p class="puzzle-intro" id="puzzleIntro"></p>
+  <pre class="cipher-block" id="cipherBlock"></pre>
+  <div class="helper-label" id="helperLabel"></div>
+  <div class="helper-table" id="helperTable"></div>
+  <form class="puzzle-form" id="puzzleForm">
+    <input class="puzzle-input" id="puzzleInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off">
+    <button class="puzzle-submit" type="submit">OK</button>
+  </form>
+  <button class="puzzle-close" id="puzzleClose" type="button">zavřít</button>
+</div>
+
 <main class="stage">
   <div class="heptagon-wrap">
     <svg class="heptagon-svg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" id="heptagonSvg">
@@ -674,27 +841,100 @@ body::after {
     'z Horní Bečvy','od Lysé hory','od Pražma','z Trojanovic','od Rožnova'
   ];
 
-  const STATION_MSG = [
+  const PUZZLES = [
     null,
-    { title: 'I. Odbočka do hvozdu',
-      body: 'Sejdi z cesty doleva do lesa. Drž se staré kolejnice — vede tě vzhůru zhruba 300 kroků k vrcholu. Nespěchej, znamení nikam neuteče.' },
-    { title: 'II. Vrchol kolejnice',
-      body: 'Tady kolejnice končí. Ostrá zatáčka doleva a dál po vrstevnici — neklesej, nestoupej, drž horu po pravé ruce.' },
-    { title: 'III. Rozcestník strážkyně',
-      body: 'U rozcestníku tě čeká kolegyně. Poslechni ji — pošle tě k altánku na úkol a zpět. Bez ní dál nepokračuj.' },
-    { title: 'IV. Altánek',
-      body: 'Úkol: vyfoť celou skupinku v altánku (foto si nechte, budete ho ukazovat na konci). Pak zpět k rozcestníku — kolegyně vás pošle dolů.' },
-    { title: 'V. Dva pařezy',
-      body: 'Mírně nahoru — cesta se ukáže, ale fáborky jsou tu trochu zrádné, sleduj je pozorně. POZOR: za chvíli překročíš malý potůček, nešlápni vedle.' },
-    { title: 'VI. Doleva dolů',
-      body: 'Tady to láme doleva a klesá. Drž se fáborků dolů ke světlině.' },
-    { title: 'VII. Nad mýtinou',
-      body: 'Mýtina je pod tebou. Sejdi přesně dolů na lesní cestu — tam tě sbírá pedagog.' },
+    {
+      title: 'I. Šifra binární',
+      intro: 'Každá čtveřice bitů = jedna desítková číslice.',
+      cipher: '0111  0100  0010  0001',
+      helperTitle: 'Tabulka 0–9',
+      helperRows: [
+        ['0','0000'],['1','0001'],['2','0010'],['3','0011'],['4','0100'],
+        ['5','0101'],['6','0110'],['7','0111'],['8','1000'],['9','1001'],
+      ],
+    },
+    {
+      title: 'II. Šifra hexadecimální',
+      intro: 'Čtyři hex dvojice = ASCII znaky. Najdi cifry.',
+      cipher: '33  30  35  38',
+      helperTitle: 'ASCII číslic',
+      helperRows: [
+        ["'0' = 0x30"], ["'1' = 0x31"], ["'2' = 0x32"], ["'3' = 0x33"], ["'4' = 0x34"],
+        ["'5' = 0x35"], ["'6' = 0x36"], ["'7' = 0x37"], ["'8' = 0x38"], ["'9' = 0x39"],
+      ],
+    },
+    {
+      title: 'III. Šifra Morseova',
+      intro: 'Čtyři Morse skupiny = čtyři číslice. Mezery oddělují cifry.',
+      cipher: '---..   .----   -....   ....-',
+      helperTitle: 'Morse 0–9',
+      helperRows: [
+        ['0','-----'],['1','.----'],['2','..---'],['3','...--'],['4','....-'],
+        ['5','.....'],['6','-....'],['7','--...'],['8','---..'],['9','----.'],
+      ],
+    },
+    {
+      title: 'IV. Reverze řetězce',
+      intro: 'Vstup: pole znaků. Operace: otoč pořadí. Výstup: zadej do appky.',
+      cipher: '5  3  9  2   →   ?',
+      helperTitle: 'Pseudokód',
+      helperRows: [
+        ['reverse("5392")'],
+        ['= "5392"[::-1]'],
+        ['= ?'],
+      ],
+    },
+    {
+      title: 'V. Pseudokód',
+      intro: 'Vykonej program v hlavě (nebo na kalkulačce). Výsledek = kód.',
+      cipher: 'x = 6\nx = x * 2\nx = x + 1000\ny = x * 6\nprint(y)',
+      helperTitle: 'Tip',
+      helperRows: [
+        ['1) spočítej x'],
+        ['2) přičti 1000'],
+        ['3) vynásob ×6'],
+      ],
+    },
+    {
+      title: 'VI. HTML entity',
+      intro: 'Každá entita &#NN; je desítkový ASCII kód jednoho znaku.',
+      cipher: '&#52;  &#56;  &#49;  &#57;',
+      helperTitle: 'ASCII číslic',
+      helperRows: [
+        ["'0' = 48"], ["'1' = 49"], ["'2' = 50"], ["'3' = 51"], ["'4' = 52"],
+        ["'5' = 53"], ["'6' = 54"], ["'7' = 55"], ["'8' = 56"], ["'9' = 57"],
+      ],
+    },
+    {
+      title: 'VII. Caesarova šifra',
+      intro: 'Každá číslice je posunutá o +3 (mod 10). Posuň zpět o −3 a získáš kód.',
+      cipher: '8  5  2  6   →   ?',
+      helperTitle: 'Posun číslic −3 (mod 10)',
+      helperRows: [
+        ['0 → 7','1 → 8','2 → 9'],
+        ['3 → 0','4 → 1','5 → 2'],
+        ['6 → 3','7 → 4','8 → 5'],
+        ['9 → 6'],
+      ],
+    },
+  ];
+
+  // Po vyřešení stanoviště N → hint kam jít na další (cyklicky 1→2→…→7→1).
+  // Doplň podle reálného rozmístění tagů kolem ubytovny.
+  const HINTS = [
+    null,
+    { emoji: '🎠', text: 'kde si hraje ten nejmenší' },
+    { emoji: '🏪', text: 'kde svítí cedule, i když je zavřeno' },
+    { emoji: '🌳', text: '_doplnit hint na 4. stanoviště_' },
+    { emoji: '🪨', text: '_doplnit hint na 5. stanoviště_' },
+    { emoji: '🚪', text: '_doplnit hint na 6. stanoviště_' },
+    { emoji: '🪧', text: '_doplnit hint na 7. stanoviště_' },
+    { emoji: '🌀', text: '_doplnit hint zpět na 1. stanoviště (cyklus)_' },
   ];
 
   const FINAL_MSG = {
-    title: 'Poslední úkol',
-    body: 'Sejdi na cestu k pedagogovi. Ukaž mu fotku z altánku a vyřkni, kdo byl Radegast — bůh, podle kterého se hora jmenuje. (Nápověda: hojnost, pohostinnost, na Radhošti mu stojí socha.)'
+    title: 'Radegastův odkaz složen',
+    body: 'Všech sedm znamení v rukou. Sejdi se s pedagogem a vyřkni, kdo byl Radegast — pohanský bůh, podle něhož se hora jmenuje (nápověda: hojnost, pohostinnost, socha na Radhošti).'
   };
 
   const rand = (a) => a[Math.floor(Math.random() * a.length)];
@@ -860,14 +1100,26 @@ body::after {
 
   const flashEl = document.getElementById('flashcard');
   const backdropEl = document.getElementById('flashBackdrop');
+  const flashBodyEl = document.getElementById('flashBody');
   function showFlash(stationIdx, isFinal) {
-    const msg = isFinal ? FINAL_MSG : STATION_MSG[stationIdx];
-    if (!msg) return;
-    document.getElementById('flashNumber').textContent = isFinal
-      ? 'odkaz dovršen'
-      : 'znamení ' + stationIdx + ' ze sedmi';
-    document.getElementById('flashTitle').textContent = msg.title;
-    document.getElementById('flashBody').textContent = msg.body;
+    flashBodyEl.innerHTML = '';
+    if (isFinal) {
+      document.getElementById('flashNumber').textContent = 'odkaz dovršen';
+      document.getElementById('flashTitle').textContent = FINAL_MSG.title;
+      flashBodyEl.textContent = FINAL_MSG.body;
+    } else {
+      const hint = HINTS[stationIdx];
+      if (!hint) return;
+      document.getElementById('flashNumber').textContent = 'znamení ' + stationIdx + ' ze sedmi';
+      document.getElementById('flashTitle').textContent = 'Znamení nalezeno';
+      const emoji = document.createElement('span');
+      emoji.className = 'hint-emoji';
+      emoji.textContent = hint.emoji;
+      const text = document.createElement('div');
+      text.textContent = 'Další hledej: ' + hint.text;
+      flashBodyEl.appendChild(emoji);
+      flashBodyEl.appendChild(text);
+    }
     flashEl.classList.toggle('final', !!isFinal);
     requestAnimationFrame(() => {
       backdropEl.classList.add('open');
@@ -894,17 +1146,19 @@ body::after {
     const url = new URL(location.href);
     url.hash = '';
     url.searchParams.delete('t');
+    url.searchParams.delete('p');
     history.replaceState(null, '', url.pathname + url.search);
   }
-  function readToken() {
+  function readQuery() {
     const hash = location.hash.replace(/^#/, '');
     const hp = new URLSearchParams(hash);
-    let t = hp.get('t');
-    if (!t) {
-      const qp = new URLSearchParams(location.search);
-      t = qp.get('t');
-    }
-    return t ? t.trim().toLowerCase() : null;
+    const qp = new URLSearchParams(location.search);
+    const t = hp.get('t') || qp.get('t');
+    const p = hp.get('p') || qp.get('p');
+    return {
+      token: t ? t.trim().toLowerCase() : null,
+      puzzle: p ? parseInt(p, 10) : null,
+    };
   }
 
   function celebrate(stationIdx, isFinal) {
@@ -973,6 +1227,65 @@ body::after {
     applyToken(code);
   });
 
+  const puzzleBackdrop = document.getElementById('puzzleBackdrop');
+  const puzzleModal = document.getElementById('puzzleModal');
+  const puzzleInput = document.getElementById('puzzleInput');
+  let currentPuzzleIdx = null;
+  function renderHelper(rows) {
+    const wrap = document.getElementById('helperTable');
+    wrap.innerHTML = '';
+    rows.forEach(row => {
+      row.forEach(cell => {
+        const d = document.createElement('div');
+        d.className = 'cell';
+        d.textContent = cell;
+        wrap.appendChild(d);
+      });
+    });
+  }
+  function showPuzzle(idx) {
+    const p = PUZZLES[idx];
+    if (!p) { toast('neznámé stanoviště'); return; }
+    if (progress.has(idx)) {
+      toast('znamení ' + idx + ' už máš');
+      return;
+    }
+    currentPuzzleIdx = idx;
+    document.getElementById('puzzleNum').textContent = 'znamení ' + idx + ' ze sedmi';
+    document.getElementById('puzzleTitle').textContent = p.title;
+    document.getElementById('puzzleIntro').textContent = p.intro;
+    document.getElementById('cipherBlock').textContent = p.cipher;
+    document.getElementById('helperLabel').textContent = p.helperTitle;
+    renderHelper(p.helperRows);
+    puzzleInput.value = '';
+    requestAnimationFrame(() => {
+      puzzleBackdrop.classList.add('open');
+      puzzleModal.classList.add('open');
+      setTimeout(() => puzzleInput.focus(), 350);
+    });
+  }
+  function closePuzzle() {
+    puzzleBackdrop.classList.remove('open');
+    puzzleModal.classList.remove('open');
+    currentPuzzleIdx = null;
+  }
+  puzzleBackdrop.addEventListener('click', closePuzzle);
+  document.getElementById('puzzleClose').addEventListener('click', closePuzzle);
+  document.getElementById('puzzleForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = puzzleInput.value.trim();
+    if (!/^\d{4}$/.test(code)) { toast('zadej 4-místný kód'); return; }
+    const station = TOKENS[code];
+    if (!station || station !== currentPuzzleIdx) {
+      toast('špatný kód, zkus to znovu');
+      puzzleInput.value = '';
+      puzzleInput.focus();
+      return;
+    }
+    closePuzzle();
+    applyToken(code);
+  });
+
   document.getElementById('reset').addEventListener('click', () => {
     if (!confirm('Začít znovu? Ztratíš nasbíraná znamení a dostaneš nové jméno.')) return;
     localStorage.removeItem(SK.progress(currentName));
@@ -987,8 +1300,13 @@ body::after {
   currentName = getOrCreateName();
   progress = loadProgress(currentName);
   render();
-  const tok = readToken();
-  if (tok) applyToken(tok);
+  const q = readQuery();
+  consumeToken();
+  if (q.puzzle && PUZZLES[q.puzzle]) {
+    showPuzzle(q.puzzle);
+  } else if (q.token) {
+    applyToken(q.token);
+  }
 })();
 </script>
 </body>

@@ -9,23 +9,27 @@
 
 - **Kdy:** večer po večeři (středa 24. 4.), po setmění
 - **Kde:** lesní stezka za ubytovnou (Penzion Janoštík, Rožnov p. R.)
-- **Délka trasy:** ~1,5 km
-- **Stanovišť:** 8 (NFC tagy, rozestup ~200 m)
-- **Doba hry:** cca 45–55 min na tým
+- **Délka trasy:** ~1,5 km (včetně otočky na altánek)
+- **Stanovišť:** 7 NFC tagů + sběrný bod na cestě (bez NFC)
+- **Doba hry:** cca 40–50 min na tým
 - **Téma:** valašský folklór — Radegast, strážce hor a hojnosti
+- **Obsah tagů:** navigační varování pro další úsek trasy + jeden foto úkol v altánku
 
 ---
 
 ## Herní princip
 
-Studenti jdou stezkou nahoru a na každém stanovišti najdou NFC tag = "znamení Radegastovo".
-Každý tag obsahuje IT hádanku (binárka, Caesarova šifra, kus pseudokódu…) a nápovědu
-k dalšímu stanovišti (řetězená trasa / linked list).
+Studenti jdou stezkou a na každém ze 7 stanovišť najdou NFC tag = "znamení Radegastovo".
+Tag otevře v mobilu webovou appku, která rozsvítí daný bod v heptagonu a zobrazí
+**varování / instrukci pro další úsek** (kam jít, kde pozor na vodu, jak nepřehlédnout fáborek).
 
-Na **vrcholu** je pedagog v roli **strážce / poutníka**. Vyslechne rozluštěný vzkaz,
-a když tým uspěje, "prozradí cestu dolů" + dá klíč k závěrečné hádance řešené cestou zpět.
+Na **rozcestníku (3. stanoviště)** stojí kolegyně-strážkyně. Pošle skupinku na otočku k **altánku
+(4. stanoviště)**, kde je foto úkol — společné foto skupinky. Pak se vrací zpět k rozcestníku
+a kolegyně je pouští dolů.
 
-Dole na ubytovně se týmy sejdou a hra se vyhodnotí.
+Poslední (7.) NFC bod je nad lesní cestou. Po jeho načtení appka zobrazí **finální úkol**:
+ukázat pedagogovi fotku z altánku a vyřknout, kdo byl Radegast. Pedagog stojí dole na cestě
+a sbírá příchozí skupinky — sběrné místo už NFC nemá.
 
 ---
 
@@ -48,8 +52,10 @@ v sborníku pověstí / na webu Valašského muzea.
 ## Technické poznámky k NFC tagům
 
 - **Typ tagů:** lepící NTAG213/215/216 (čte je většina mobilů)
-- **Obsah:** text přímo na tagu (funguje i bez signálu v lese) — preferováno
-- **Alternativa:** URL na statickou stránku (jen pokud chytí mobilní data)
+- **Obsah:** URL na nasazenou appku s parametrem `?t=XXXX` (4-místný kód stanoviště)
+- **Záloha při výpadku NFC:** v appce je "?" tlačítko → nouzové volání na pedagoga + ruční zadání 4-místného kódu (pedagog ho po telefonu nadiktuje)
+- **Kódy stanovišť (drž v tajnosti):** 1=7421, 2=3058, 3=8164, 4=2935, 5=6072, 6=4819, 7=5293
+- **Pedagog tel:** doplnit do `EMERGENCY_TEL` v `index.html` (zatím placeholder `+420XXXXXXXXX`)
 
 ### Checklist pro realizaci
 - [ ] Otestovat čtení tagů na různých mobilech (Android auto, iPhone XS+ auto, starší = NFC Tools)
@@ -66,28 +72,30 @@ v sborníku pověstí / na webu Valašského muzea.
 
 ---
 
-## Stanoviště (obsah tagů)
+## Stanoviště (reálná trasa)
 
-> TODO: doplnit finální hádanky. Návrh typů níže — provázané jako řetěz,
-> dohromady složí Radegastův vzkaz / finální heslo.
+Trasa za penzionem do lesa, smyčka přes vrchol a altánek, návrat dolů na lesní cestu.
 
-| # | Typ hádanky | Obsah tagu | Řešení | Nápověda k dalšímu |
-|---|-------------|-----------|--------|--------------------|
-| 1 | Binární kód | `01001000 ...` | ? | ? |
-| 2 | Caesarova šifra | ? | ? | ? |
-| 3 | Hex → text | ? | ? | ? |
-| 4 | Pseudokód / vývojový diagram | ? | ? | ? |
-| 5 | XOR / klíč z předchozího | ? | ? | ? |
-| 6 | Převod soustav | ? | ? | ? |
-| 7 | Logická hádanka | ? | ? | ? |
-| 8 | Finální složení vzkazu | ? | HESLO | vrchol → pedagog |
+| # | Místo (NFC) | Co tag řekne (varování pro další úsek) |
+|---|-------------|----------------------------------------|
+| 1 | Odbočka do lesa (~100 m od startu) | Doleva z cesty, po staré kolejnici cca 300 kroků k vrcholu |
+| 2 | Vrchol kolejnice | Ostrá doleva, dál po vrstevnici (neklesat / nestoupat) |
+| 3 | Rozcestník — **kolegyně** | Poslech kolegyni, pošle skupinu na altánek (otočka) |
+| 4 | Altánek | **Foto úkol:** společné foto skupinky (drží se pro finále). Pak zpět k rozcestníku |
+| 5 | Dva pařezy | Mírně nahoru, fáborky lehce matoucí. **Pozor: malý potůček překročit** |
+| 6 | Doleva dolů (fáborek) | Klesání doleva, dál po fáborcích ke světlině |
+| 7 | Nad mýtinou | Sejít přesně dolů na lesní cestu — tam čeká pedagog. Appka spustí **finální úkol** (ukázat fotku + vyřknout, kdo byl Radegast) |
+| — | Lesní cesta (sběr) | Pedagog sbírá skupinky, bez NFC |
+
+> Pozn.: pořadí tokenů v `index.html` (`TOKENS`) odpovídá tomuto číslování 1–7.
 
 ---
 
 ## Časový odhad
 
-8 stanovišť × (3 min hledání + 2 min hádanka + 2 min přesun) ≈ 55 min / tým.
-Poslední stanoviště směřovat blíž k ubytovně (hra se "stahuje" k základně).
+7 NFC + altánková otočka × (3 min hledání + 1 min přečtení varování + 2 min přesun)
++ ~5 min foto úkol ≈ **40–50 min / tým**.
+Sběrný bod je dole na lesní cestě, ne u ubytovny — odtud se vrací společně.
 
 ---
 
@@ -95,6 +103,7 @@ Poslední stanoviště směřovat blíž k ubytovně (hra se "stahuje" k základ
 
 - [x] Koncept hry
 - [x] Příběhový rámec
-- [ ] Finální obsah tagů (8 hádanek)
-- [ ] Test trasy (dnes večer)
-- [ ] Realizace (zítra večer)
+- [x] Trasa prošlá a zaměřená (7 NFC bodů)
+- [x] Texty stanovišť v appce (navigace + finální úkol)
+- [ ] Nalepit / zafixovat NFC tagy na trase
+- [ ] Realizace (večer)

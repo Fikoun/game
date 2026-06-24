@@ -108,6 +108,145 @@ body::after {
   flex-shrink: 0;
   max-width: 50%;
 }
+.help-btn {
+  background: transparent;
+  border: 1px solid rgba(232,160,78,0.45);
+  color: var(--ember);
+  width: 2rem; height: 2rem;
+  border-radius: 50%;
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  margin-left: 0.6rem;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  padding: 0;
+}
+.help-btn:hover, .help-btn:focus {
+  background: rgba(232,160,78,0.15);
+  color: var(--ember-bright);
+  outline: none;
+}
+.help-modal {
+  position: fixed;
+  z-index: 25;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -45%) scale(0.94);
+  width: min(92vw, 400px);
+  background: linear-gradient(180deg, rgba(34,26,18,0.97), rgba(15,12,9,0.97));
+  border: 1px solid rgba(232,160,78,0.45);
+  border-radius: 14px;
+  padding: 1.3rem 1.2rem 1.1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s, transform 0.4s cubic-bezier(0.2,0.8,0.3,1.25);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.65),
+    inset 0 0 60px rgba(232,160,78,0.07),
+    0 0 80px rgba(232,160,78,0.22);
+}
+.help-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.help-modal h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.05rem;
+  color: var(--gold);
+  margin: 0 0 0.9rem;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+.help-section {
+  margin-bottom: 1.1rem;
+}
+.help-section:last-child { margin-bottom: 0.3rem; }
+.help-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.32em;
+  color: var(--ember);
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+.help-text {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--ink-dim);
+  line-height: 1.4;
+  margin: 0 0 0.6rem;
+}
+.help-call {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background: var(--crimson);
+  color: #fff;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.1s;
+}
+.help-call:hover { background: #d96045; }
+.help-call:active { transform: scale(0.98); }
+.code-form {
+  display: flex;
+  gap: 0.5rem;
+}
+.code-input {
+  flex: 1;
+  background: rgba(11,14,20,0.7);
+  border: 1px solid rgba(232,160,78,0.3);
+  color: var(--ink);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+  padding: 0.55rem 0.4rem;
+  border-radius: 6px;
+  width: 100%;
+  min-width: 0;
+}
+.code-input:focus {
+  outline: none;
+  border-color: var(--ember);
+  background: rgba(11,14,20,0.9);
+}
+.code-submit {
+  background: var(--ember);
+  color: var(--bg);
+  border: none;
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  padding: 0 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.code-submit:hover { background: var(--ember-bright); }
+.help-close {
+  display: block;
+  margin: 0.9rem auto 0;
+  background: transparent;
+  border: none;
+  color: var(--ink-faint);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+.help-close:hover { color: var(--ink-dim); }
 .player .label {
   display: block;
   font-size: 0.65rem;
@@ -447,7 +586,27 @@ body::after {
     <span class="label">poutník</span>
     <span class="name" id="playerName">—</span>
   </div>
+  <button class="help-btn" id="helpBtn" aria-label="nápověda" title="nápověda">?</button>
 </header>
+
+<div class="flash-backdrop" id="helpBackdrop"></div>
+<div class="help-modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <h2 id="helpTitle">Nápověda strážce</h2>
+  <div class="help-section">
+    <div class="help-label">v nouzi volej</div>
+    <p class="help-text">Ztráta, zranění, nejasná cesta — zavolej okamžitě.</p>
+    <a class="help-call" id="helpCall" href="tel:">📞 Zavolat pedagoga</a>
+  </div>
+  <div class="help-section">
+    <div class="help-label">nefunguje NFC?</div>
+    <p class="help-text">Zavolej a já ti nadiktuju 4-místný kód stanoviště. Zadej ho sem:</p>
+    <form class="code-form" id="codeForm">
+      <input class="code-input" id="codeInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off">
+      <button class="code-submit" type="submit">OK</button>
+    </form>
+  </div>
+  <button class="help-close" id="helpClose" type="button">zavřít</button>
+</div>
 
 <main class="stage">
   <div class="heptagon-wrap">
@@ -488,14 +647,15 @@ body::after {
   };
 
   const TOKENS = {
-    'k7m2qx9p': 1,
-    'b4t8nfd3': 2,
-    'v6r5jhg2': 3,
-    'x9c3pwl8': 4,
-    'f2s7dyn4': 5,
-    'h5a8vzm6': 6,
-    'q3w9tek5': 7,
+    '7421': 1,
+    '3058': 2,
+    '8164': 3,
+    '2935': 4,
+    '6072': 5,
+    '4819': 6,
+    '5293': 7,
   };
+  const EMERGENCY_TEL = '+420XXXXXXXXX';
 
   const ADJECTIVES = [
     'Bujarý','Vlasatý','Mlčenlivý','Chytrý','Lstivý','Tajemný','Bezbradý',
@@ -516,25 +676,25 @@ body::after {
 
   const STATION_MSG = [
     null,
-    { title: 'I. Vstup do hvozdu',
-      body: 'Stín smrku tě sleduje. Strach je nejhorší vlk — nech ho běžet napřed.' },
-    { title: 'II. Sestup k vodě',
-      body: 'Cesta klesá k potoku. Voda v noci klame oko — hledej kámen, na kterém spí žába.' },
-    { title: 'III. Křižovatka',
-      body: 'Vlevo zní havraní krák, vpravo větve šeptají. Drž se značky — folklor klame, reflexka ne.' },
-    { title: 'IV. Pod skálou',
-      body: 'Skála se zvedá. Drž se světla a nedívej se za sebe — to, co je za tebou, není tvé.' },
-    { title: 'V. Mlhou',
-      body: 'Reflexní páska tě vede, ne stín. Pokud někoho slyšíš zpívat — jen pokračuj.' },
-    { title: 'VI. Hřeben',
-      body: 'Vítr nese kosti slov dávných pastýřů. Nelámej je — vyslechni je.' },
-    { title: 'VII. Radhošť',
-      body: 'Hvězda zazářila. Předstup před strážce a vyřkni vzkaz, který jsi nesl celou cestu.' },
+    { title: 'I. Odbočka do hvozdu',
+      body: 'Sejdi z cesty doleva do lesa. Drž se staré kolejnice — vede tě vzhůru zhruba 300 kroků k vrcholu. Nespěchej, znamení nikam neuteče.' },
+    { title: 'II. Vrchol kolejnice',
+      body: 'Tady kolejnice končí. Ostrá zatáčka doleva a dál po vrstevnici — neklesej, nestoupej, drž horu po pravé ruce.' },
+    { title: 'III. Rozcestník strážkyně',
+      body: 'U rozcestníku tě čeká kolegyně. Poslechni ji — pošle tě k altánku na úkol a zpět. Bez ní dál nepokračuj.' },
+    { title: 'IV. Altánek',
+      body: 'Úkol: vyfoť celou skupinku v altánku (foto si nechte, budete ho ukazovat na konci). Pak zpět k rozcestníku — kolegyně vás pošle dolů.' },
+    { title: 'V. Dva pařezy',
+      body: 'Mírně nahoru — cesta se ukáže, ale fáborky jsou tu trochu zrádné, sleduj je pozorně. POZOR: za chvíli překročíš malý potůček, nešlápni vedle.' },
+    { title: 'VI. Doleva dolů',
+      body: 'Tady to láme doleva a klesá. Drž se fáborků dolů ke světlině.' },
+    { title: 'VII. Nad mýtinou',
+      body: 'Mýtina je pod tebou. Sejdi přesně dolů na lesní cestu — tam tě sbírá pedagog.' },
   ];
 
   const FINAL_MSG = {
-    title: 'Odkaz splněn',
-    body: 'Všech sedm znamení v rukou. Radegast tě propustil. Najdi cestu zpět — strážce čeká.'
+    title: 'Poslední úkol',
+    body: 'Sejdi na cestu k pedagogovi. Ukaž mu fotku z altánku a vyřkni, kdo byl Radegast — bůh, podle kterého se hora jmenuje. (Nápověda: hojnost, pohostinnost, na Radhošti mu stojí socha.)'
   };
 
   const rand = (a) => a[Math.floor(Math.random() * a.length)];
@@ -787,6 +947,31 @@ body::after {
       wrap.appendChild(e);
     }
   }
+
+  const helpBackdrop = document.getElementById('helpBackdrop');
+  const helpModal = document.getElementById('helpModal');
+  const codeInput = document.getElementById('codeInput');
+  document.getElementById('helpCall').setAttribute('href', 'tel:' + EMERGENCY_TEL.replace(/\s+/g, ''));
+  function openHelp() {
+    helpBackdrop.classList.add('open');
+    helpModal.classList.add('open');
+    setTimeout(() => codeInput.focus(), 350);
+  }
+  function closeHelp() {
+    helpBackdrop.classList.remove('open');
+    helpModal.classList.remove('open');
+    codeInput.value = '';
+  }
+  document.getElementById('helpBtn').addEventListener('click', openHelp);
+  document.getElementById('helpClose').addEventListener('click', closeHelp);
+  helpBackdrop.addEventListener('click', closeHelp);
+  document.getElementById('codeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = codeInput.value.trim();
+    if (!/^\d{4}$/.test(code)) { toast('zadej 4-místný kód'); return; }
+    closeHelp();
+    applyToken(code);
+  });
 
   document.getElementById('reset').addEventListener('click', () => {
     if (!confirm('Začít znovu? Ztratíš nasbíraná znamení a dostaneš nové jméno.')) return;

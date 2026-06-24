@@ -29,19 +29,19 @@
 
 ## NFC tagy
 
-Každý tag = URL na nasazenou appku s parametrem `?p=N` (číslo stanoviště).
+Každý tag = URL na nasazenou appku s parametrem `?p=N` (číslo stanoviště). Pořadí 1–7 určuje cyklus hintů (po N následuje N+1).
 
-| # | URL na tag |
-|---|------------|
-| 1 | `https://fikoun.github.io/game/?p=1` |
-| 2 | `https://fikoun.github.io/game/?p=2` |
-| 3 | `https://fikoun.github.io/game/?p=3` |
-| 4 | `https://fikoun.github.io/game/?p=4` |
-| 5 | `https://fikoun.github.io/game/?p=5` |
-| 6 | `https://fikoun.github.io/game/?p=6` |
-| 7 | `https://fikoun.github.io/game/?p=7` |
+| # | Místo | URL na tag |
+|---|-------|------------|
+| 1 | **Most** (cedule 10 tun max, řeka pod ním) | `https://fikoun.github.io/game/?p=1` |
+| 2 | **Školka** | `https://fikoun.github.io/game/?p=2` |
+| 3 | **Basketbalové hřiště** | `https://fikoun.github.io/game/?p=3` |
+| 4 | **Prodejna frgálů** — *foto úkol se senem co visí venku* | `https://fikoun.github.io/game/?p=4` |
+| 5 | **Zastávka autobusu** | `https://fikoun.github.io/game/?p=5` |
+| 6 | **Zavřená zahrada** (cedule vedou tam, kde žádná zahrada není) | `https://fikoun.github.io/game/?p=6` |
+| 7 | **Jídelna** (uvnitř ubytovny) | `https://fikoun.github.io/game/?p=7` |
 
-Kde fyzicky bude které číslo, je čistě na pedagogovi — appka po načtení daného čísla rovnou označí stanoviště a ukáže hint na další v kruhu.
+> Foto úkol je v hintu po basketbalu (HINTS[3]). Tým, který by frgály scanoval jako poslední (a tedy viděl finále místo hintu), je na fotku upozorněn v `FINAL_MSG`.
 
 ---
 

@@ -464,21 +464,29 @@ body::after {
 
   // Hint / hádanka, která se zobrazí po naskenování stanoviště N.
   // Popisuje kde hledat DALŠÍ stanoviště (cyklicky 1→2→…→7→1).
-  // Doplň podle reálného rozmístění tagů kolem ubytovny.
+  //
+  // Rozmístění (čísla = pořadí v cyklu, ne pořadí návštěvy):
+  //  1 Most (10 tun max, řeka pod nohama)
+  //  2 Školka
+  //  3 Basketbalové hřiště
+  //  4 Prodejna frgálů (foto úkol — se senem co visí venku)
+  //  5 Zastávka autobusu
+  //  6 Zavřená zahrada (cedule vedou tam, kde žádná zahrada není)
+  //  7 Jídelna v ubytovně
   const HINTS = [
     null,
-    { emoji: '🎠', text: 'Tam, kde si hraje ten nejmenší.' },
-    { emoji: '🏪', text: 'Kde svítí cedule, i když je zavřeno.' },
-    { emoji: '🌳', text: '_doplnit hádanku na 4. stanoviště_' },
-    { emoji: '🪨', text: '_doplnit hádanku na 5. stanoviště_' },
-    { emoji: '🚪', text: '_doplnit hádanku na 6. stanoviště_' },
-    { emoji: '🪧', text: '_doplnit hádanku na 7. stanoviště_' },
-    { emoji: '🌀', text: '_doplnit hádanku zpět na 1. stanoviště (cyklus)_' },
+    { emoji: '🧸', text: 'Tam, kde si hraje ten nejmenší a do brány nesmí každý.' },                                   // po 1 Most → 2 Školka
+    { emoji: '🏀', text: 'Kde se kulatý míč hází na obroučku a koš nemá víko.' },                                       // po 2 Školka → 3 Basket
+    { emoji: '🥧', text: 'Kde voní valašský koláč. Vyfoť se tam se senem, co visí venku — bez fotky to nepočítej!' },   // po 3 Basket → 4 Frgály
+    { emoji: '🚌', text: 'Kde lidé sedí, ale nikam nejedou — dokud nepřijede žluté auto s číslem.' },                   // po 4 Frgály → 5 Zastávka
+    { emoji: '🪧', text: 'Cedule slibují zahradu — ale zahrada tam dávno není. Najdi ji za zámkem.' },                  // po 5 Zastávka → 6 "Zahrada"
+    { emoji: '🍽️', text: 'Tam, kde se třikrát denně sedá k jídlu. Tentokrát hledej uvnitř.' },                          // po 6 Zahrada → 7 Jídelna
+    { emoji: '🌊', text: 'Pod nohama řeka, nad cedulí číslo 10 — víc tun už neuneseš.' },                                // po 7 Jídelna → 1 Most (cyklus)
   ];
 
   const FINAL_MSG = {
     title: 'Radegastův odkaz složen',
-    body: 'Všech sedm znamení v rukou. Sejdi se s pedagogem a vyřkni, kdo byl Radegast — pohanský bůh, podle něhož se hora jmenuje (nápověda: hojnost, pohostinnost, socha na Radhošti).'
+    body: 'Všech sedm znamení v rukou. Sejdi se s pedagogem, ukaž fotku se senem z frgálárny a vyřkni, kdo byl Radegast — pohanský bůh, podle kterého se hora jmenuje (nápověda: hojnost, pohostinnost, socha na Radhošti).'
   };
 
   function loadProgress() {
